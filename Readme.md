@@ -1,4 +1,4 @@
-**Guide to run**
+Guide to run
 ---
 ```
     mkdir mta_test
