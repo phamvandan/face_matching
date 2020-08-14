@@ -1,0 +1,36 @@
+Total images: 37
+img_height: 1000
+Can not detect: 0
+Rotate: 2
+Avg rotate time: 0.0022161006927490234
+Total times:6.949531555175781
+Avg times:0.187825177166913
+--------------------------------------
+img_height: 800
+Can not detect: 0
+Rotate: 2
+Avg rotate time: 0.0008199214935302734
+Total times:5.449781894683838
+Avg times:0.14729140255902265
+--------------------------------------
+img_height: 600
+Can not detect: 1
+Rotate: 3
+Avg rotate time: 0.0019789536794026694
+Total times:4.164289951324463
+Avg times:0.11254837706282332
+--------------------------------------
+img_height: 400
+Can not detect: 1
+Rotate: 3
+Avg rotate time: 0.001138766606648763
+Total times:2.521697998046875
+Avg times:0.06815399994721284
+--------------------------------------
+img_height: 250
+Can not detect: 2
+Rotate: 6
+Avg rotate time: 0.0003326733907063802
+Total times:1.5955958366394043
+Avg times:0.04312421180106498
+--------------------------------------
