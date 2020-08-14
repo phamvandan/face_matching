@@ -1,5 +1,7 @@
 Guide to run
 ---
+Step 1: Install requirements.txt  
+Step 2: Run these commands.
 ```
     mkdir mta_test
     git clone https://github.com/deepinsight/insightface.git
