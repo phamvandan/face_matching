@@ -16,6 +16,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import sys
 sys.path.insert(0, '../insightface/deploy/')
 import face_model
+import time
 
 
 def rotate(mat, angle):
@@ -33,13 +34,15 @@ def rotate(mat, angle):
     rotated_mat = cv2.warpAffine(mat, rotation_mat, (bound_w, bound_h))
     return rotated_mat
 
-def read_image_from_folder(folder_name):
+def read_image_from_folder(folder_name,f= None):
     print("reading...")
     images = []
     for path, subdirs, files in os.walk(folder_name):
         for name in files:
             filename = os.path.join(path, name)
             img = cv2.imread(filename)
+            if f is not None:
+                f.write(str(img.shape[0])+" "+str(img.shape[1])+"\n")
             images.append(img)
     print("end read")
     return images
@@ -73,13 +76,15 @@ if __name__ == '__main__':
     model = face_model.FaceModel(args)
     print("Thresh:", float(args.thresh))
     first = True
-    images = read_image_from_folder(args.folder)
+    savepath = args.savefolder
+    cp_path = savepath
+    if not os.path.exists(savepath):
+        os.mkdir(savepath)
+    f = open(os.path.join(savepath, "result.txt"), "w+")
+    f3 = open(os.path.join(savepath, "face_size.txt"), "w+")
+    f2 = open(os.path.join(savepath, "origin_image_size.txt"), "w+")
+    images = read_image_from_folder(args.folder, f2)
     if len(images) > 0:
-        savepath = args.savefolder
-        cp_path = savepath
-        if not os.path.exists(savepath):
-            os.mkdir(savepath)
-        f = open(os.path.join(savepath, "result.txt"), "w+")
         f.write("Total images: " + str(len(images))+"\n")
         t = 0
         for img_height in img_heights:
@@ -90,18 +95,25 @@ if __name__ == '__main__':
             count = 0
             count_rotate = 0
             total_time = 0
+            subtract = 0
+            rotate_time = 0
             for index, img in enumerate(images):
                 if img is None:
+                    subtract = subtract + 1
                     continue
                 if img.shape[0] >= img_height:
                     img = imutils.resize(img, height=img_height)
                 for i in range(4):
+                    start = time.time()
                     img = rotate(img, 90*i)
+                    end = time.time()
                     if i > 0:
                         count_rotate = count_rotate + 1
+                        rotate_time = rotate_time + end - start
                     _, cropped, t = model.get_input(img)
                     total_time = total_time + t
                     if cropped is not None:
+                        f3.write(str(cropped.shape[0]) + " " + str(cropped.shape[1]) + "\n")
                         break
                 if cropped is None:
                     count = count + 1
@@ -110,8 +122,9 @@ if __name__ == '__main__':
                     continue
             f.write("Can not detect: "+str(count)+"\n")
             f.write("Rotate: "+str(count_rotate)+"\n")
+            f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")
             f.write("Total times:" + str(total_time)+"\n")
-            f.write("Avg times:" + str(total_time/len(images)))
+            f.write("Avg times:" + str(total_time/(len(images)-subtract))+"\n")
             f.write("--------------------------------------\n")
                 # cv2.imshow("cropped", cropped)
                 # key = cv2.waitKey(1)
