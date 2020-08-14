@@ -9,3 +9,18 @@ Step 2: Run these commands.
     cd face_matching/
     python3 face_detector.py -f path/to/image/folder -sf path/to/save/folder
 ```
+Results
+---
+* The format of log file as follow:  
+* result.txt: 
+```
+Total images: 
+img_height: // use for detection
+Can not detect: 
+Rotate: // number of rotations 
+Avg rotate time: // time of rotate
+Total times:
+Avg times:   
+```
+* face_size.txt: size of cropped faces
+* origin_image_size.txt: size of original images
