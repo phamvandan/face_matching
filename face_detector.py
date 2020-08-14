@@ -83,24 +83,31 @@ if __name__ == '__main__':
     f = open(os.path.join(savepath, "result.txt"), "w+")
     f3 = open(os.path.join(savepath, "face_size.txt"), "w+")
     f2 = open(os.path.join(savepath, "origin_image_size.txt"), "w+")
-    images = read_image_from_folder(args.folder, f2)
-    if len(images) > 0:
-        f.write("Total images: " + str(len(images))+"\n")
-        t = 0
-        for img_height in img_heights:
-            savepath = os.path.join(cp_path,str(img_height))
-            if not os.path.exists(savepath):
-                os.mkdir(savepath)
-            f.write("img_height: " + str(img_height)+"\n")
-            count = 0
-            count_rotate = 0
-            total_time = 0
-            subtract = 0
-            rotate_time = 0
-            for index, img in enumerate(images):
+    first = True
+    for img_height in img_heights:
+        savepath = os.path.join(cp_path, str(img_height))
+        if not os.path.exists(savepath):
+            os.mkdir(savepath)
+        f.write("img_height: " + str(img_height)+"\n")
+        f3.write("img_height: " + str(img_height)+"\n")
+        count = 0
+        count_rotate = 0
+        total_time = 0
+        subtract = 0
+        rotate_time = 0
+        number_images = 0
+        for path, subdirs, files in os.walk(args.folder):
+            for name in files:
+                filename = os.path.join(path, name)
+                img = cv2.imread(filename)
                 if img is None:
-                    subtract = subtract + 1
                     continue
+                number_images = number_images + 1
+                if number_images % 20 ==0:
+                    print("Processing....")
+                temp = img.copy()
+                if first:
+                    f2.write(str(temp.shape[0]) + " " + str(temp.shape[1])+ "\n")
                 if img.shape[0] >= img_height:
                     img = imutils.resize(img, height=img_height)
                 for i in range(4):
@@ -110,25 +117,28 @@ if __name__ == '__main__':
                     if i > 0:
                         count_rotate = count_rotate + 1
                         rotate_time = rotate_time + end - start
-                    _, cropped, t = model.get_input(img)
+                    _, cropped, t, size = model.get_input(img)
                     total_time = total_time + t
                     if cropped is not None:
-                        f3.write(str(cropped.shape[0]) + " " + str(cropped.shape[1]) + "\n")
+                        f3.write(str(int(size[0])) + " " + str(int(size[1])) + "\n")
                         break
                 if cropped is None:
                     count = count + 1
                     cv2.imwrite(os.path.join(
-                        savepath, str(count)+str(img_height)+".jpg"), images[index])
+                        savepath, str(count)+str(img_height)+".jpg"),temp)
                     continue
-            f.write("Can not detect: "+str(count)+"\n")
-            f.write("Rotate: "+str(count_rotate)+"\n")
-            f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")
-            f.write("Total times:" + str(total_time)+"\n")
-            f.write("Avg times:" + str(total_time/(len(images)-subtract))+"\n")
-            f.write("--------------------------------------\n")
-                # cv2.imshow("cropped", cropped)
-                # key = cv2.waitKey(1)
-                # if key == ord('q'):
-                #     break
-        print("STOP")
-    
+        first = False
+        f3.write("-----------------------------\n")
+        f.write("Can not detect: "+str(count)+"\n")
+        f.write("Rotate: "+str(count_rotate)+"\n")
+        f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")
+        f.write("Total times:" + str(total_time)+"\n")
+        f.write("Avg times:" + str(total_time/number_images)+"\n")
+        f.write("Total images processed: "+ str(number_images)+"\n")
+        f.write("--------------------------------------\n")
+
+            # cv2.imshow("cropped", cropped)
+            # key = cv2.waitKey(1)
+            # if key == ord('q'):
+            #     break
+    print("STOP")
