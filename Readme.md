@@ -7,5 +7,5 @@ Step 2: Run these commands.
     git clone https://github.com/deepinsight/insightface.git
     git clone https://github.com/phamvandan/face_matching.git
     cd face_matching/
-    python3 detect_folder.py -f path/to/image/folder -sf path/to/save/folder
+    python3 face_detector.py -f path/to/image/folder -sf path/to/save/folder
 ```
