@@ -14,13 +14,20 @@ Results
 * The format of log file as follow:  
 * result.txt: 
 ```
-Total images: 
-img_height: // use for detection
+Total images:
+// total images processed
+img_height:
+// use for detection
 Can not detect: 
-Rotate: // number of rotations 
-Avg rotate time: // time of rotate
+// number of images can not be detected
+Rotate: 
+// number of rotations 
+Avg rotate time: 
+// avg time of rotatation
 Total times:
+// total times for process
 Avg times:   
+// avg times per image
 ```
 * face_size.txt: size of cropped faces
 * origin_image_size.txt: size of original images
