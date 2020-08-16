@@ -121,7 +121,7 @@ if __name__ == '__main__':
                 if face_boxes is None:
                     count = count + 1
                     cv2.imwrite(os.path.join(
-                        savepath, str(count)+str(img_height)+".jpg"), temp)
+                        savepath, str(count)+".jpg"), temp)
                     continue
         f_detail.write("-----------------------------\n")
         f.write("Can not detect: "+str(count)+"\n")
