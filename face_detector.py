@@ -75,21 +75,18 @@ if __name__ == '__main__':
     img_heights = [1000, 800, 600, 400, 250]
     model = face_model.FaceModel(args)
     print("Thresh:", float(args.thresh))
-    first = True
     savepath = args.savefolder
     cp_path = savepath
     if not os.path.exists(savepath):
         os.mkdir(savepath)
     f = open(os.path.join(savepath, "result.txt"), "w+")
-    f3 = open(os.path.join(savepath, "face_size.txt"), "w+")
-    f2 = open(os.path.join(savepath, "origin_image_size.txt"), "w+")
-    first = True
+    f_detail = open(os.path.join(savepath, "details.txt"), "w+")
     for img_height in img_heights:
         savepath = os.path.join(cp_path, str(img_height))
         if not os.path.exists(savepath):
             os.mkdir(savepath)
         f.write("img_height: " + str(img_height)+"\n")
-        f3.write("img_height: " + str(img_height)+"\n")
+        f_detail.write("img_height: " + str(img_height)+"\n")
         count = 0
         count_rotate = 0
         total_time = 0
@@ -103,11 +100,10 @@ if __name__ == '__main__':
                 if img is None:
                     continue
                 number_images = number_images + 1
-                if number_images % 20 ==0:
+                if number_images % 20 == 0:
                     print("Processing....")
                 temp = img.copy()
-                if first:
-                    f2.write(str(temp.shape[0]) + " " + str(temp.shape[1])+ "\n")
+                f_detail.write(filename + " (" + str(temp.shape[0]) + " " + str(temp.shape[1]) + ") ")
                 if img.shape[0] >= img_height:
                     img = imutils.resize(img, height=img_height)
                 for i in range(4):
@@ -117,18 +113,17 @@ if __name__ == '__main__':
                     if i > 0:
                         count_rotate = count_rotate + 1
                         rotate_time = rotate_time + end - start
-                    _, cropped, t, size = model.get_input(img)
+                    face_boxes, t = model.get_input_test(img)
                     total_time = total_time + t
-                    if cropped is not None:
-                        f3.write(str(int(size[0])) + " " + str(int(size[1])) + "\n")
+                    if face_boxes is not None:
+                        f_detail.write(str(len(face_boxes)) +" "+ ' '.join(map(str, face_boxes))+" "+str(count_rotate)+" " +str(t) + "\n")
                         break
-                if cropped is None:
+                if face_boxes is None:
                     count = count + 1
                     cv2.imwrite(os.path.join(
-                        savepath, str(count)+str(img_height)+".jpg"),temp)
+                        savepath, str(count)+str(img_height)+".jpg"), temp)
                     continue
-        first = False
-        f3.write("-----------------------------\n")
+        f_detail.write("-----------------------------\n")
         f.write("Can not detect: "+str(count)+"\n")
         f.write("Rotate: "+str(count_rotate)+"\n")
         f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")

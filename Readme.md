@@ -29,5 +29,7 @@ Total times:
 Avg times:   
 // avg times per image
 ```
-* face_size.txt: size of cropped faces
-* origin_image_size.txt: size of original images
+* details.txt:
+```
+    file_name (img_w, img_h) number_of_face [face_x, face_y, face_w, face_h confidence] number_of_rotation time
+```
