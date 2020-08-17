@@ -94,7 +94,6 @@ if __name__ == '__main__':
         subtract = 0
         rotate_time = 0
         number_images = 0
-        number_of_processed = 0
         for path, subdirs, files in os.walk(args.folder):
             for name in files:
                 filename = os.path.join(path, name)
@@ -117,7 +116,6 @@ if __name__ == '__main__':
                         rotate_time = rotate_time + end - start
                     face_boxes, t = model.get_input_test(img)
                     total_time = total_time + t
-                    number_of_processed = number_of_processed + 1
                     if face_boxes is not None:
                         f_detail.write(str(len(face_boxes)) +" "+ ' '.join(map(str, face_boxes))+" "+str(count_rotate)+" " +str(t) + "\n")
                         break
@@ -131,10 +129,9 @@ if __name__ == '__main__':
         f.write("Rotate: "+str(count_rotate)+"\n")
         f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")
         f.write("Total times:" + str(total_time)+"\n")
-        f.write("Avg times:" + str(total_time/number_of_processed)+"\n")
+        f.write("Avg times:" + str(total_time/(number_images + count_rotate))+"\n")
         f.write("Total images processed: "+ str(number_images)+"\n")
         f.write("--------------------------------------\n")
-
             # cv2.imshow("cropped", cropped)
             # key = cv2.waitKey(1)
             # if key == ord('q'):
