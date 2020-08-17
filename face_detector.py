@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, '../insightface/deploy/')
 import face_model
 import time
-
+import shutil
 
 def rotate(mat, angle):
     if angle==0:
@@ -77,8 +77,9 @@ if __name__ == '__main__':
     print("Thresh:", float(args.thresh))
     savepath = args.savefolder
     cp_path = savepath
-    if not os.path.exists(savepath):
-        os.mkdir(savepath)
+    if os.path.exists(savepath):
+        shutil.rmtree(savepath)
+    os.mkdir(savepath)
     f = open(os.path.join(savepath, "result.txt"), "w+")
     f_detail = open(os.path.join(savepath, "details.txt"), "w+")
     for img_height in img_heights:
@@ -93,6 +94,7 @@ if __name__ == '__main__':
         subtract = 0
         rotate_time = 0
         number_images = 0
+        number_of_processed = 0
         for path, subdirs, files in os.walk(args.folder):
             for name in files:
                 filename = os.path.join(path, name)
@@ -115,6 +117,7 @@ if __name__ == '__main__':
                         rotate_time = rotate_time + end - start
                     face_boxes, t = model.get_input_test(img)
                     total_time = total_time + t
+                    number_of_processed = number_of_processed + 1
                     if face_boxes is not None:
                         f_detail.write(str(len(face_boxes)) +" "+ ' '.join(map(str, face_boxes))+" "+str(count_rotate)+" " +str(t) + "\n")
                         break
@@ -128,7 +131,7 @@ if __name__ == '__main__':
         f.write("Rotate: "+str(count_rotate)+"\n")
         f.write("Avg rotate time: " + str(rotate_time/count_rotate) + "\n")
         f.write("Total times:" + str(total_time)+"\n")
-        f.write("Avg times:" + str(total_time/number_images)+"\n")
+        f.write("Avg times:" + str(total_time/number_of_processed)+"\n")
         f.write("Total images processed: "+ str(number_images)+"\n")
         f.write("--------------------------------------\n")
 
